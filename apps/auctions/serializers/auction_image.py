@@ -1,0 +1,15 @@
+from rest_framework import serializers
+
+from apps.auctions.models import AuctionImage
+
+
+class AuctionImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AuctionImage
+
+        fields = (
+            "id",
+            "image_url",
+            "created_at",
+        )

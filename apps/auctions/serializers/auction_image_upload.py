@@ -1,19 +1,16 @@
 from rest_framework import serializers
-from apps.auctions.models import ( AuctionImage,)
 
 
 class AuctionImageUploadSerializer(serializers.Serializer):
-    image = serializers.ImageField()
+    image = serializers.ImageField(required=True,  allow_empty_file=False, use_url=False,)
+
+    def validate_image(self, value):
+
+        max_size = 5 * 1024 * 1024
+
+        if value.size > max_size:
+            raise serializers.ValidationError("Image size cannot exceed 5MB.")
+
+        return value
 
 
-
-class AuctionImageSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = AuctionImage
-
-        fields = (
-            "id",
-            "image_url",
-            "created_at",
-        )

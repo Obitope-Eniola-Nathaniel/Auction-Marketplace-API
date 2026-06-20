@@ -10,7 +10,8 @@ from apps.common.permissions.ownership import (IsOwnerOrAdmin,)
 
 @extend_schema(tags=["Auctions"])
 class AuctionDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ( Auction.objects.select_related("owner","winner",))
+    # queryset = ( Auction.objects.select_related("owner","winner",))
+    queryset = ( Auction.objects .select_related("owner","winner", ) .prefetch_related("images", ))
 
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 

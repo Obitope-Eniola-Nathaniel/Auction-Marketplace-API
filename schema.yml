@@ -60,6 +60,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuctionList'
           description: ''
+  /api/auctions/{auction_id}/images/:
+    post:
+      operationId: auctions_images_create
+      description: Upload an image for an auction.
+      summary: Upload auction image
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Auctions
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+              required:
+              - image
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuctionImage'
+          description: ''
   /api/auctions/{id}/:
     get:
       operationId: auctions_retrieve
@@ -568,6 +601,11 @@ components:
         winner:
           type: string
           readOnly: true
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuctionImage'
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -582,11 +620,30 @@ components:
       - description
       - end_time
       - id
+      - images
       - owner
       - starting_price
       - title
       - updated_at
       - winner
+    AuctionImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image_url:
+          type: string
+          format: uri
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - image_url
     AuctionList:
       type: object
       properties:

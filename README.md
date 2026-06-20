@@ -11,11 +11,13 @@ The application supports:
 * User registration and authentication
 * JWT-based login and logout
 * Auction creation and management
+* Auction image uploads using Cloudinary
 * Bid placement
 * Bid history tracking
 * Auction completion and winner selection
 * Role-based access control
 * Swagger/OpenAPI documentation
+
 
 ---
 
@@ -26,6 +28,7 @@ The application supports:
 * Django REST Framework (DRF)
 * PostgreSQL
 * Simple JWT
+* Cloudinary
 * drf-spectacular (Swagger/OpenAPI)
 * pytest
 * Factory Boy
@@ -163,22 +166,43 @@ Fields:
 
 ---
 
+## AuctionImage
+
+Represents images attached to an auction listing.
+
+Fields:
+
+* auction
+* image_url
+* public_id
+
+An auction can have multiple images.
+
+Images are uploaded to Cloudinary and only the image URL and Cloudinary public ID are stored in the database.
+
+---
+
 # Entity Relationships
 
 ```text
 User
- ├── owns many Auctions
- ├── places many Bids
- └── can win Auctions
+├── owns many Auctions
+├── places many Bids
+└── can win Auctions
 
 Auction
- ├── belongs to User (owner)
- ├── has many Bids
- └── has one winner
+├── belongs to User (owner)
+├── has many Bids
+├── has many AuctionImages
+└── has one winner
+
+AuctionImage
+└── belongs to Auction
 
 Bid
- ├── belongs to Auction
- └── belongs to User
+├── belongs to Auction
+└── belongs to User
+
 ```
 
 ---
@@ -245,6 +269,17 @@ PATCH  /api/auctions/{id}/
 DELETE /api/auctions/{id}/
 
 POST   /api/auctions/{id}/complete/
+
+### Auction Images
+
+```http
+POST /api/auctions/{auction_id}/images/
+```
+
+Upload an image for an auction.
+
+Images are stored in Cloudinary and linked to the corresponding auction listing.
+
 ```
 
 ---
@@ -278,6 +313,14 @@ The following business rules are enforced through the service layer:
 
 * Highest bidder becomes the winner.
 * Auction status changes to COMPLETED.
+
+### Auction Images
+
+* Only authenticated users can upload images.
+* Users can upload images for their auction listings.
+* Images are stored in Cloudinary.
+* Image URLs are persisted in the database.
+
 
 ---
 
@@ -462,6 +505,8 @@ Several engineering decisions were made to improve maintainability:
 * Swagger/OpenAPI documentation included.
 * JWT token blacklisting implemented for logout.
 * Bid placement protected using database row locking.
+* Cloudinary is used for image storage instead of storing files locally.
+
 
 ---
 
@@ -480,6 +525,9 @@ If given additional time, the following improvements would be implemented:
 * Soft delete support
 * Advanced filtering and search
 * Email notifications for winners
+* Image deletion and replacement
+* Automatic image optimization
+* Image moderation
 
 ---
 
