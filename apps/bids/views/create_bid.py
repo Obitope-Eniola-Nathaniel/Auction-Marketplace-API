@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.permissions import (IsAuthenticated,)
 from rest_framework.response import Response
@@ -12,12 +14,18 @@ class CreateBidView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=["Bids"],
+        summary="Place bid",
+        request=BidCreateSerializer,
+        responses={201: BidDetailSerializer},
+    )
     def post(self, request, auction_id,):
         serializer = (BidCreateSerializer(data=request.data))
 
         serializer.is_valid(raise_exception=True)
 
-        auction = Auction.objects.get(pk=auction_id)
+        auction = get_object_or_404(Auction.objects.select_related("owner"), pk=auction_id)
 
         bid = PlaceBidService.execute(
             auction=auction,

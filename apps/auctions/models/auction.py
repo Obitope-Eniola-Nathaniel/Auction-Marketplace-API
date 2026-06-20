@@ -29,10 +29,9 @@ class Auction(TimeStampedModel):
 
     def __str__(self) -> str:
         return self.title
-    
 
-@property
-def is_expired(self):
-    from django.utils import timezone
+    @property
+    def is_expired(self):
+        from django.utils import timezone
 
-    return timezone.now() >= self.end_time
+        return timezone.now() >= self.end_time

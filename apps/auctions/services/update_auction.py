@@ -3,16 +3,16 @@ from apps.common.exceptions.custom_exceptions import (BusinessRuleViolation,)
 class UpdateAuctionService:
 
     @staticmethod
-    def execute(*, auction, title, description, end_time,):
+    def execute(*, auction, **fields):
         if auction.is_expired:
             raise BusinessRuleViolation(
                 "Expired auctions cannot be updated."
             )
 
-        auction.title = title
-        auction.description = description
-        auction.end_time = end_time
+        for field, value in fields.items():
+            setattr(auction, field, value)
 
-        auction.save()
+        if fields:
+            auction.save(update_fields=[*fields.keys(), "updated_at"])
 
         return auction
