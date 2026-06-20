@@ -12,3 +12,11 @@ db.sqlite3
 .idea/
 
 .vscode/
+venv/
+__pycache__/
+*.py[cod]
+.env
+db.sqlite3
+staticfiles/
+media/
+.pytest_cache/
